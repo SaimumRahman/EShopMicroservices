@@ -4,7 +4,7 @@ using MediatR;
 
 namespace CatalogAPI.Products.CreateProduct
 {
-    public record CreateProductCommand(string Name, List<string> Catagory, string Description, string ImageFile, decimal Price):ICommand<CreateProductResult>;
+    public record CreateProductCommand(string Name, List<string> Category, string Description, string ImageFile, decimal Price):ICommand<CreateProductResult>;
     public record CreateProductResult(Guid Id);
     internal class CreateProductCommandHandler : ICommandHandler<CreateProductCommand, CreateProductResult>
     {
@@ -14,7 +14,7 @@ namespace CatalogAPI.Products.CreateProduct
             var product = new Product
             {
                 Name = command.Name,
-                Catagory = command.Catagory,
+                Category = command.Category,
                 Description = command.Description,
                 ImageFile = command.ImageFile,
                 Price = command.Price,  
