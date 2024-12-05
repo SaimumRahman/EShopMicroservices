@@ -5,3 +5,4 @@ global using BuildingBlocks.CQRS;
 global using CatalogAPI.Models;
 global using Marten;
 global using MediatR;
+global using CatalogAPI.Exceptions;
