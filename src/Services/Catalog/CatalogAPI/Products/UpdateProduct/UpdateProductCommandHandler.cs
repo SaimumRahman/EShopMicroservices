@@ -7,6 +7,16 @@ namespace CatalogAPI.Products.UpdateProduct
                                         string Description, string ImageFile, decimal Price)
     :ICommand<UpdateProductResult>;
     public record UpdateProductResult (bool IsSuccess);
+
+    public class UpdateProductCommandValidator : AbstractValidator<UpdateProductCommand>
+    {
+        public UpdateProductCommandValidator()
+        {
+            RuleFor(command => command.Id).NotEmpty().WithMessage("Product ID is Required");
+            RuleFor(command => command.Name).NotEmpty().Length(2,150).WithMessage("Name Must be 2 to 150 Characters");
+            RuleFor(command => command.Price).GreaterThan(0).WithMessage("Price must be grater than 0");
+        }
+    }
     internal class UpdateProductCommandHandler (IDocumentSession session,ILogger<UpdateProductCommandHandler> logger)
         : ICommandHandler<UpdateProductCommand, UpdateProductResult>
     {
