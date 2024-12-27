@@ -1,6 +1,5 @@
-using BuildingBlocks.Behavior;
-using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,36 +19,15 @@ builder.Services.AddMarten(opts =>
 }).UseLightweightSessions();
 #endregion
 
+// Exception Handler 
+builder.Services.AddExceptionHandler<CustomerExceptionHandler>();
+
 var app = builder.Build();
 
 #region Configure the HTTP request pipeline
 app.MapCarter();
+app.UseExceptionHandler(options => { });
 #endregion
 
 
-#region Exception Handler
-
-app.UseExceptionHandler(exceptionhandler => exceptionhandler.Run(async context =>
-{
-    var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
-    if (exception == null) return;
-
-    var problemsDetals = new ProblemDetails()
-    {
-        Title = exception.Message,
-        Status = StatusCodes.Status500InternalServerError,
-        Detail = exception.StackTrace,
-    };
-
-    var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
-    logger.LogError(exception,exception.Message);
-
-    context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-    context.Response.ContentType = "application/problem+json";
-
-    await context.Response.WriteAsJsonAsync(problemsDetals);
-
-}));
-
-#endregion
 app.Run();
