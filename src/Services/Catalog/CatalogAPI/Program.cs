@@ -1,4 +1,6 @@
 
+using HealthChecks.UI.Client;
+
 var builder = WebApplication.CreateBuilder(args);
 
 #region Add Service to the Container
@@ -25,6 +27,12 @@ if (builder.Environment.IsDevelopment())
 // Exception Handler 
 builder.Services.AddExceptionHandler<CustomerExceptionHandler>();
 
+#region Health Checks Configuration
+
+builder.Services.AddHealthChecks().AddNpgSql(builder.Configuration.GetConnectionString("Database")!);
+
+#endregion
+
 var app = builder.Build();
 
 #region Configure the HTTP request pipeline
@@ -32,5 +40,13 @@ app.MapCarter();
 app.UseExceptionHandler(options => { });
 #endregion
 
+#region Health Checks HTTP 
+
+app.UseHealthChecks("/health",new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+});
+
+#endregion
 
 app.Run();
